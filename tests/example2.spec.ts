@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('1Проверка элементов на странице Playwright', async ({ page }) => {
+test('Проверка элементов на странице Playwright', async ({ page }) => {
 
     await test.step('Степ 1 - Открыть страницу Playwright', async () => {
         await page.goto('https://playwright.dev/');
