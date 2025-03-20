@@ -1,7 +1,7 @@
 import {test, expect} from '@playwright/test';
 
 test.describe('Страница Playwright', () => {
-    test('Проверка поиска', async ({page}) => {
+    test('Модальное окно поиска', async ({page}) => {
         await test.step('Прекондиция: открыть главную страницу Playwright', async () => {
             await page.goto('https://playwright.dev/');
         });
