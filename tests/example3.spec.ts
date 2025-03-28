@@ -3,7 +3,7 @@ import { test, expect, defineConfig } from '@playwright/test';
 test('Проверить переключение со светлой темы на темную и обратно', async ({ page }) => {
 
     await test.step('Прекондиция: открыть главную страницу Playwright', async () => {
-        await page.goto('https://playwright.dev/')
+        await page.goto('/')
     });
 
     await test.step('Степ 1 - Переключиться на темную тему и проверить отображение элементов', async () => {
