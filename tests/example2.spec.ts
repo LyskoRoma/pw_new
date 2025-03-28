@@ -1,29 +1,56 @@
-import { test, expect } from '@playwright/test';
+import {test, expect} from '@playwright/test';
 
-test('1Проверка элементов на странице Playwright', async ({ page }) => {
+test.describe('Страница Playwright', () => {
+    test('Модальное окно поиска', async ({page}) => {
+        await test.step('Прекондиция: открыть главную страницу Playwright', async () => {
+            await page.goto('https://playwright.dev/');
+        });
 
-    await test.step('Степ 1 - Открыть страницу Playwright', async () => {
-        await page.goto('https://playwright.dev/');
-    });
+        await test.step('Степ 1 - кликнуть на кнопку Search', async () => {
+            await page.click("//span[@class='DocSearch-Button-Placeholder']");
+            const modal = page.locator("//div[@class='DocSearch-Modal']")
 
-    await test.step('Степ 2 - Проверить наличие таба Community', async () => {
-        const tab = page.locator('//a[contains(@class, "navbar__item") and contains(@class, "navbar__link") and text()="Community"]');
-        await expect(tab).toBeVisible();
-    });
+            await expect(modal).toBeVisible();
+        });
 
-    await test.step('Степ 3 - Проверить наличие кнопки "Get Started"', async () => {
-        const getStartedButton = page.locator('//a[@class="getStarted_Sjon"]');
-        await expect(getStartedButton).toBeVisible();
-    });
+         const { searchForm, noSearchs, footer } = await test.step('Степ 2 - проверить дефолтное отображение элементов модального окна', async () => {
+            const searchForm = page.locator("//form[@class='DocSearch-Form']");
+            const noSearchs = page.locator("//p[text()='No recent searches']");
+            const footer = page.locator("//footer[@class='DocSearch-Footer']");
 
-    await test.step('Степ 4 - Проверить наличие поля для поиска', async () => {
-        const searchButton = page.locator('//div[@class="navbarSearchContainer_Bca1"]');
-        await expect(searchButton).toBeVisible();
-    });
+            await expect(searchForm).toBeVisible();
+            await expect(noSearchs).toBeVisible();
+            await expect(footer).toBeVisible();
 
-    // Шаг 5 - Проверить наличие ссылки "GitHub"
-    await test.step('Степ 5 - Проверить наличие плейсхолдера с тексом Search в поле для поиска', async () => {
-        const placeHolder = page.locator('//span[@class="DocSearch-Button-Placeholder"]');
-        await expect(placeHolder).toHaveText('Search');
+            return { searchForm, noSearchs, footer }
+        });
+
+        await test.step('Степ 3 - ввести текст и проверить состояние элементов поиска', async () => {
+            await page.fill("//input[contains(@placeholder, 'Search docs')]", 'framework');
+
+            await expect(page.locator("//button[contains(@class, 'DocSearch-Reset')]")).toBeVisible();
+            await expect(page.locator("//div[contains(@class, 'DocSearch-Dropdown-Container')]")).toBeVisible();
+            await expect(page.locator("//a[contains(@href, '/search?q=') and contains(text(), 'See all')]")).toBeVisible();
+
+
+        });
+
+        await test.step('Степ 4 - нажать на кнопку крестик и проверить состояние элементов модального окна', async () => {
+            await page.click("//button[@class='DocSearch-Reset']");
+
+            await expect(searchForm).toBeVisible();
+            await expect(noSearchs).toBeVisible();
+            await expect(footer).toBeVisible();
+
+        });
+
+        await test.step('Степ 5 - ввести строку "test" и кликнуть "See all"', async () => {
+            await page.click("//input[@class='DocSearch-Input']");
+            await page.fill("//input[@class='DocSearch-Input']", 'test');
+            await page.click("//a[contains(@href, '/search?q=') and contains(text(), 'See all')]");
+
+            await expect(page).toHaveURL(/.*search.*test.*/);
+        });
+
     });
 });
